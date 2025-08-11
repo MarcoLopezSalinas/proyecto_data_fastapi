@@ -10,12 +10,12 @@ router = APIRouter(prefix="/departments", tags=["Departments"])
 @router.post("/batch_insert", response_model=List[DepartmentResponse])
 def insert_departments(departments: List[DepartmentCreate], db: Session = Depends(get_db)):
     """
-    Inserta de 1 a 1000 departamentos en una sola petición
+    Inserta de 1 a 2000 departamentos en una sola petición
     """
     if len(departments) == 0:
         raise HTTPException(status_code=400, detail="La lista está vacía")
-    if len(departments) > 1000:
-        raise HTTPException(status_code=400, detail="No puedes insertar más de 1000 registros por petición")
+    if len(departments) > 2000:
+        raise HTTPException(status_code=400, detail="No puedes insertar más de 2000 registros por petición")
 
     inserted = batch_insert_departments(db, departments)
     return inserted
