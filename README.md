@@ -14,7 +14,7 @@ La API permite:
 
 1. 📥 **Recibir datos históricos** desde archivos CSV.
 2. 💾 **Cargar estos datos** en una base de datos SQL.
-3. ⚡ **Insertar transacciones en lote** (de **1** a **1000 registros** por petición) optimizando el rendimiento.
+3. ⚡ **Insertar transacciones en lote** (de **1** a **2000 registros** por petición) optimizando el rendimiento.
 
 ---
 
