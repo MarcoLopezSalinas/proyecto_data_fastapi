@@ -1,1 +1,6 @@
-DATABASE_URL = "mysql+pymysql://root:1234@localhost:3306/company"
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL")
