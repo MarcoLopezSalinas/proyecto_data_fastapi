@@ -1,31 +1,44 @@
-Manejo de archivos y directorios
+import cv2
 
-pwd → muestra ruta actual
+# 1. Cargar el modelo PRE-ENTRENADO de cara (Haar Cascade)
+face_cascade = cv2.CascadeClassifier(
+    cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+)
 
-ls → lista archivos (ls -l detallado, ls -a incluye ocultos)
+# 2. Inicializar la cámara
+cap = cv2.VideoCapture(0)  # si no funciona, prueba con 1
 
-cd carpeta → moverse a carpeta
+# Opcional: bajar resolución para que vaya suave
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
-cd .. → subir un nivel
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        print("No se pudo leer de la cámara")
+        break
 
-mkdir nombre → crear carpeta
+    # Pasar a escala de grises (el modelo Haar trabaja así)
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-rmdir nombre → borrar carpeta vacía
+    # 3. Detectar caras con el modelo entrenado
+    faces = face_cascade.detectMultiScale(
+        gray,
+        scaleFactor=1.2,   # cuánto se reduce la imagen en cada escala
+        minNeighbors=5,    # cuántos vecinos necesita para confirmar
+        minSize=(80, 80)   # tamaño mínimo de cara
+    )
 
-rm archivo → borrar archivo (rm -r carpeta borra con todo)
+    # 4. Dibujar rectángulos en las caras detectadas
+    for (x, y, w, h) in faces:
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-📄 Archivos
+    # Mostrar el frame
+    cv2.imshow("Paso 1 - Cara con Haar", frame)
 
-cat archivo → mostrar contenido
+    # Salir con la tecla 'q'
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
 
-more archivo → ver por páginas
-
-less archivo → igual que more pero más flexible
-
-cp origen destino → copiar
-
-mv origen destino → mover o renombrar
-
-touch archivo → crear archivo vacío
-
-nano archivo / vi archivo → editar
+cap.release()
+cv2.destroyAllWindows()
