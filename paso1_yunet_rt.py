@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-# Cargar modelo YuNet
+# Cargar YuNet
 net = cv2.dnn.readNet("yunet.onnx")
 
 cap = cv2.VideoCapture(0)
@@ -15,7 +15,6 @@ while True:
 
     h, w = frame.shape[:2]
 
-    # Preprocesamiento
     blob = cv2.dnn.blobFromImage(
         frame,
         scalefactor=1.0,
@@ -25,23 +24,22 @@ while True:
     )
 
     net.setInput(blob)
-    detections = net.forward()
+    detections = net.forward()   # (1, N, 15)
 
-    # detections shape: [1, 1, N, 15]
-    for det in detections[0][0]:
-        confidence = det[2]
+    # Iterar por cada detección
+    for det in detections[0]:
+        x1 = int(det[0] * w)
+        y1 = int(det[1] * h)
+        x2 = int(det[2] * w)
+        y2 = int(det[3] * h)
+        score = det[14]  # índice correcto del confidence
 
-        if confidence > 0.6:
-            x1 = int(det[3] * w)
-            y1 = int(det[4] * h)
-            x2 = int(det[5] * w)
-            y2 = int(det[6] * h)
-
-            cv2.rectangle(frame, (x1,y1), (x2,y2), (0,255,0), 2)
+        if score > 0.6:
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
     cv2.imshow("YuNet Detection", frame)
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if cv2.waitKey(1) & 0xFF == ord("q"):
         break
 
 cap.release()
